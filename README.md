@@ -6,14 +6,16 @@
 
 - 后端：Go、Gin、GORM、SQLite、slog、godotenv、JWT
 - 前端：Nuxt 4、TypeScript、Nuxt UI、Pinia
+- Android：Kotlin、Jetpack Compose、Material 3、Retrofit、DataStore、Media3
 - 运行方式：本地运行，不使用 Docker
 
 ## 目录结构
 
 ```text
-storybox-lan/
+老李讲故事/
 ├── backend/          Go 后端
 ├── web/              Nuxt 4 Web 端
+├── android/          Android 原生客户端
 ├── docs/             API、数据库、扫描规则和 MVP 文档
 ├── scripts/          本地开发脚本
 └── README.md
@@ -40,6 +42,16 @@ pnpm dev
 ```
 
 Web 默认监听 `http://localhost:3000`。
+
+## 启动 Android
+
+用 Android Studio 打开 `android/` 目录，等待 Gradle Sync 完成后运行到真机。
+
+真机不能使用 `http://localhost:8080` 连接电脑上的后端，需要填写电脑或 NAS 的局域网 IP，例如：
+
+```text
+http://192.168.1.10:8080
+```
 
 ## 配置 NAS 故事库路径
 
@@ -76,6 +88,7 @@ curl -X POST http://localhost:8080/api/admin/scan \
 
 - 后台：`http://localhost:3000/admin`
 - 播放端：`http://localhost:3000/player`
+- Android：首次启动后填写后端局域网地址
 
 Range 播放测试：
 

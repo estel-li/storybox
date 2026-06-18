@@ -14,5 +14,10 @@ web/.data/
 web/.cache/
 web/dist/
 
+# Android
+android/.gradle/
+android/local.properties
+android/**/build/
+
 # Logs
 *.log

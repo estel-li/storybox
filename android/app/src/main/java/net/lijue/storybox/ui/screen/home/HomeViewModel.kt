@@ -1,0 +1,57 @@
+package net.lijue.storybox.ui.screen.home
+
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
+import net.lijue.storybox.core.common.UiState
+import net.lijue.storybox.core.common.toFriendlyMessage
+import net.lijue.storybox.core.model.AlbumDto
+import net.lijue.storybox.core.model.CategoryDto
+import net.lijue.storybox.core.model.PlayHistoryDto
+import net.lijue.storybox.data.repository.ApiRepository
+import net.lijue.storybox.playback.StoryPlayerManager
+
+data class HomeData(
+    val categories: List<CategoryDto> = emptyList(),
+    val albums: List<AlbumDto> = emptyList(),
+    val history: List<PlayHistoryDto> = emptyList()
+)
+
+class HomeViewModel(
+    private val repository: ApiRepository,
+    private val playerManager: StoryPlayerManager
+) : ViewModel() {
+    private val _state = MutableStateFlow<UiState<HomeData>>(UiState.Loading)
+    val state: StateFlow<UiState<HomeData>> = _state
+
+    init {
+        load()
+    }
+
+    fun load() {
+        viewModelScope.launch {
+            _state.value = UiState.Loading
+            runCatching {
+                HomeData(
+                    categories = repository.categories(),
+                    albums = repository.allAlbums().take(8),
+                    history = repository.history().take(5)
+                )
+            }.onSuccess {
+                _state.value = UiState.Success(it)
+            }.onFailure {
+                _state.value = UiState.Error(it.toFriendlyMessage())
+            }
+        }
+    }
+
+    fun continuePlay(item: PlayHistoryDto, onStarted: () -> Unit) {
+        val story = item.story ?: return
+        viewModelScope.launch {
+            playerManager.playQueue(listOf(story), startPositionSeconds = item.positionSeconds)
+            onStarted()
+        }
+    }
+}
