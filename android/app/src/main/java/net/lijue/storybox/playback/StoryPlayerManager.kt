@@ -8,6 +8,7 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
+import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.session.MediaSession
 import kotlinx.coroutines.CoroutineScope
@@ -26,6 +27,7 @@ import net.lijue.storybox.core.model.SleepTimerMode
 import net.lijue.storybox.core.model.StoryDto
 import net.lijue.storybox.data.repository.ApiRepository
 
+@androidx.annotation.OptIn(UnstableApi::class)
 class StoryPlayerManager(
     private val context: Context,
     private val settings: SettingsDataStore,
@@ -45,7 +47,16 @@ class StoryPlayerManager(
     init {
         player.addListener(object : Player.Listener {
             override fun onIsPlayingChanged(isPlaying: Boolean) {
-                publishState()
+                if (!isPlaying && stopAfterCurrent && hasReachedCurrentStoryEnd()) {
+                    stopAfterCurrent = false
+                    player.setPauseAtEndOfMediaItems(false)
+                    _state.value = snapshot().copy(
+                        sleepTimerMode = SleepTimerMode.Off,
+                        sleepRemainingMillis = 0L
+                    )
+                } else {
+                    publishState()
+                }
                 if (!isPlaying) uploadProgress(force = true)
             }
 
@@ -63,10 +74,6 @@ class StoryPlayerManager(
                 uploadProgress(force = true)
                 val index = player.currentMediaItemIndex.coerceAtLeast(0)
                 queue = queue.withIndex(index)
-                if (stopAfterCurrent && reason == Player.MEDIA_ITEM_TRANSITION_REASON_AUTO) {
-                    stopAfterCurrent = false
-                    player.pause()
-                }
                 publishState()
             }
         })
@@ -151,6 +158,7 @@ class StoryPlayerManager(
 
     fun setSleepTimerMode(mode: SleepTimerMode, remainingMillis: Long = 0L) {
         stopAfterCurrent = mode == SleepTimerMode.EndOfStory
+        player.setPauseAtEndOfMediaItems(stopAfterCurrent)
         _state.value = snapshot().copy(
             sleepTimerMode = mode,
             sleepRemainingMillis = remainingMillis
@@ -195,6 +203,11 @@ class StoryPlayerManager(
         // 启动 MediaSessionService 后，系统通知栏和锁屏会接管播放控制。
         val intent = Intent(context, StoryPlaybackService::class.java)
         ContextCompat.startForegroundService(context, intent)
+    }
+
+    private fun hasReachedCurrentStoryEnd(): Boolean {
+        val duration = player.duration.takeUnless { it == C.TIME_UNSET } ?: return false
+        return duration > 0L && player.currentPosition >= duration - 1_000L
     }
 
     private fun uploadProgress(force: Boolean) {
