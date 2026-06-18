@@ -4,10 +4,10 @@
 
 ## 技术栈
 
-- 后端：Go、Gin、GORM、SQLite、slog、godotenv、JWT
+- 后端：Go、Gin、GORM、SQLite（纯 Go 驱动 `github.com/glebarez/sqlite`，不需要 CGO）、slog、godotenv、JWT
 - 前端：Nuxt 4、TypeScript、Nuxt UI、Pinia
 - Android：Kotlin、Jetpack Compose、Material 3、Retrofit、DataStore、Media3
-- 运行方式：本地运行，不使用 Docker
+- 运行方式：本地运行，或 Docker 单镜像部署
 
 ## 目录结构
 
@@ -31,6 +31,50 @@ go run ./cmd/server
 ```
 
 后端默认监听 `http://localhost:8080`。
+
+## 编译 NAS/Linux 后端
+
+后端 SQLite 使用纯 Go 驱动 `github.com/glebarez/sqlite`，不依赖 `github.com/mattn/go-sqlite3`，因此不需要开启 CGO。可以直接在 Mac 上交叉编译 Linux 二进制：
+
+```bash
+cd backend
+CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o server-linux ./cmd/server
+```
+
+## Docker 打包
+
+项目提供一个单镜像 Docker 打包方式：镜像里同时包含 Go 后端和 Nuxt Web 端。容器默认启动：
+
+- Go 后端：`0.0.0.0:8080`
+- Nuxt Web：`0.0.0.0:3000`
+- Web 端默认通过同源 `/api` 代理到容器内 Go 后端，访问 `http://NAS_IP:3000` 即可使用 Web 管理后台和播放端。
+
+本地打包：
+
+```bash
+./scripts/docker-build.sh
+```
+
+运行示例：
+
+```bash
+docker run -d --name storybox-lan \
+  -p 3000:3000 \
+  -p 8080:8080 \
+  -v storybox-data:/data \
+  -v /volume3/16T/儿童故事/01_library_故事库:/library:ro \
+  -e STORY_DB_PATH=/data/storybox.db \
+  -e STORY_LIBRARY_ROOT=/library \
+  -e STORY_ADMIN_PASSWORD=admin123456 \
+  -e STORY_JWT_SECRET=please-change-this-secret \
+  storybox-lan:local
+```
+
+GitHub Actions 工作流位于 `.github/workflows/docker.yml`。推送到 `main` / `master` 或 `v*` 标签时，会构建并发布多架构镜像到 GitHub Container Registry：
+
+```text
+ghcr.io/<github-owner>/storybox-lan
+```
 
 ## 启动 Web
 

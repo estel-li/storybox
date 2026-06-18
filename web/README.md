@@ -15,8 +15,11 @@ pnpm dev
 ## 环境变量
 
 ```env
-NUXT_PUBLIC_API_BASE=http://localhost:8080
+NUXT_PUBLIC_API_BASE=
+NUXT_API_PROXY_TARGET=http://127.0.0.1:8080
 ```
+
+默认情况下 Web 端使用同源 `/api`，由 Nuxt/Nitro 代理到 `NUXT_API_PROXY_TARGET`。如果 Web 和后端分开部署，可以把 `NUXT_PUBLIC_API_BASE` 设置成后端完整地址。
 
 ## 页面
 

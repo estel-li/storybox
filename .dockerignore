@@ -1,11 +1,14 @@
+.git
+.github
 .DS_Store
 .env
+**/.env
+**/.env.*
 
-# Go
+# Local build outputs
 backend/server
 backend/server-*
-backend/storage/*.db
-backend/storage/*.db-*
+backend/storage/
 backend/tmp/
 
 # Node / Nuxt
@@ -16,10 +19,11 @@ web/.data/
 web/.cache/
 web/dist/
 
-# Android
+# Android build outputs are not part of the server image.
 android/.gradle/
 android/local.properties
 android/**/build/
 
-# Logs
+# Editor and logs
 *.log
+*.tmp
