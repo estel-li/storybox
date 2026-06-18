@@ -1,0 +1,53 @@
+@import "tailwindcss";
+@import "@nuxt/ui";
+
+html,
+body,
+#__nuxt {
+  min-height: 100%;
+}
+
+body {
+  background: #f6f7f2;
+}
+
+.page-shell {
+  width: min(1180px, calc(100vw - 32px));
+  margin: 0 auto;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.data-table th {
+  color: #475569;
+  font-weight: 600;
+  text-align: left;
+  background: #f8fafc;
+}
+
+.data-table th,
+.data-table td {
+  border-bottom: 1px solid #e2e8f0;
+  padding: 10px 12px;
+  vertical-align: middle;
+}
+
+.data-table tbody tr:hover {
+  background: #f8fafc;
+}
+
+.native-select,
+.native-checkbox {
+  border-radius: 6px;
+}
+
+.native-select {
+  min-height: 36px;
+  border: 1px solid #cbd5e1;
+  background: white;
+  padding: 0 10px;
+}
