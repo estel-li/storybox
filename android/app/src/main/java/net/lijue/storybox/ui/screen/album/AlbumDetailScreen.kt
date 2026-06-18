@@ -1,7 +1,9 @@
 package net.lijue.storybox.ui.screen.album
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -9,6 +11,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ExpandLess
+import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -18,6 +22,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -61,6 +68,7 @@ private fun AlbumDetailContent(
         EmptyState("这个专辑还没有故事。")
         return
     }
+    val expandedChapters = remember(data.album.id) { mutableStateMapOf<String, Boolean>() }
     LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         item {
             Card(Modifier.fillMaxWidth()) {
@@ -88,11 +96,34 @@ private fun AlbumDetailContent(
             }
         }
         data.groupedStories.forEach { (chapter, stories) ->
-            item {
-                Text(chapter, style = MaterialTheme.typography.titleMedium)
+            item(key = "chapter-$chapter") {
+                val isExpanded = expandedChapters[chapter] == true
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { expandedChapters[chapter] = !isExpanded }
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column(Modifier.weight(1f)) {
+                            Text(chapter, style = MaterialTheme.typography.titleMedium)
+                            Text("${stories.size} 个故事", style = MaterialTheme.typography.bodyMedium)
+                        }
+                        Icon(
+                            if (isExpanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
+                            contentDescription = if (isExpanded) "收起" else "展开"
+                        )
+                    }
+                }
             }
-            items(stories, key = { it.id }) { story ->
-                StoryListItem(story = story, onClick = { onStory(story) })
+            if (expandedChapters[chapter] == true) {
+                items(stories, key = { it.id }) { story ->
+                    StoryListItem(story = story, onClick = { onStory(story) })
+                }
             }
         }
     }

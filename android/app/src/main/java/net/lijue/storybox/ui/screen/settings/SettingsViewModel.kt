@@ -30,12 +30,7 @@ class SettingsViewModel(
 
     fun load() {
         viewModelScope.launch {
-            val appSettings = settings.settingsFlow.first()
-            val deviceId = settings.ensureDeviceId()
-            _state.value = SettingsUiState(
-                serverBaseUrl = appSettings.serverBaseUrl,
-                deviceId = deviceId
-            )
+            _state.value = currentSettings()
         }
     }
 
@@ -55,8 +50,17 @@ class SettingsViewModel(
     fun clearCache() {
         viewModelScope.launch {
             settings.clearLocalPlaybackCache()
-            load()
-            _state.value = _state.value.copy(message = "本地播放缓存已清空。")
+            _state.value = currentSettings(message = "本地播放缓存已清空。")
         }
+    }
+
+    private suspend fun currentSettings(message: String = ""): SettingsUiState {
+        val appSettings = settings.settingsFlow.first()
+        val deviceId = settings.ensureDeviceId()
+        return SettingsUiState(
+            serverBaseUrl = appSettings.serverBaseUrl,
+            deviceId = deviceId,
+            message = message
+        )
     }
 }

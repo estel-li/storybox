@@ -102,7 +102,7 @@ class StoryPlayerManager(
                     MediaMetadata.Builder()
                         .setTitle(story.safeTitle)
                         .setAlbumTitle(story.album?.displayName.orEmpty())
-                        .setArtist("家庭故事盒")
+                        .setArtist("老李讲故事")
                         .build()
                 )
                 .build()
@@ -153,6 +153,16 @@ class StoryPlayerManager(
         } else {
             player.seekTo(0)
         }
+        publishState()
+    }
+
+    fun playQueueItem(index: Int) {
+        if (index !in queue.stories.indices) return
+        uploadProgress(force = true)
+        queue = queue.withIndex(index)
+        player.seekTo(index, 0L)
+        startPlaybackService()
+        player.play()
         publishState()
     }
 

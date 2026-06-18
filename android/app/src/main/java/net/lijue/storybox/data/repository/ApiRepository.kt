@@ -12,6 +12,11 @@ import net.lijue.storybox.core.model.UpdateHistoryRequest
 import net.lijue.storybox.core.network.ApiClient
 import net.lijue.storybox.data.api.StoryBoxApi
 
+data class PlaybackStart(
+    val stories: List<StoryDto>,
+    val startIndex: Int
+)
+
 class ApiRepository(private val settings: SettingsDataStore) {
     // 后端地址允许运行时修改，因此每次请求按当前 DataStore 值创建 API。
     private suspend fun api(): StoryBoxApi {
@@ -45,6 +50,25 @@ class ApiRepository(private val settings: SettingsDataStore) {
         api().getStoriesByAlbum(albumId).items
 
     suspend fun story(storyId: Long): StoryDto = api().getStory(storyId)
+
+    suspend fun playbackQueueFor(story: StoryDto): PlaybackStart {
+        if (story.albumId <= 0) return PlaybackStart(listOf(story), 0)
+
+        val album = story.album ?: runCatching { album(story.albumId) }.getOrNull()
+        val category = story.category
+        val albumStories = runCatching { storiesByAlbum(story.albumId) }.getOrDefault(emptyList())
+        val queue = albumStories
+            .ifEmpty { listOf(story) }
+            .map { item ->
+                item.copy(
+                    album = item.album ?: album,
+                    category = item.category ?: category
+                )
+            }
+        val startIndex = queue.indexOfFirst { it.id == story.id }
+        if (startIndex >= 0) return PlaybackStart(queue, startIndex)
+        return PlaybackStart(listOf(story), 0)
+    }
 
     suspend fun search(keyword: String): List<StoryDto> =
         if (keyword.isBlank()) emptyList() else api().search(keyword.trim()).items

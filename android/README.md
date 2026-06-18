@@ -1,4 +1,4 @@
-# 家庭故事盒 Android
+# 老李讲故事 Android
 
 这是“老李讲故事”的 Android 原生客户端。它使用 Kotlin、Jetpack Compose、Material 3、Retrofit、DataStore Preferences 和 Media3/ExoPlayer，实现局域网故事浏览、搜索、播放、后台播放、锁屏控制、收藏、继续听和睡眠定时。
 

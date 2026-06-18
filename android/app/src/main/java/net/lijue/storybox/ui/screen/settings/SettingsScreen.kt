@@ -68,7 +68,7 @@ fun SettingsScreen(
                     Icon(Icons.Default.Info, contentDescription = null)
                     Spacer(Modifier.height(8.dp))
                     Text("关于 App", style = MaterialTheme.typography.titleMedium)
-                    Text("家庭故事盒 Android MVP，用于在局域网内播放 NAS 中的儿童故事。")
+                    Text("老李讲故事 Android MVP，用于在局域网内播放 NAS 中的儿童故事。")
                     Text("手机和 NAS 必须在同一局域网。")
                 }
             }

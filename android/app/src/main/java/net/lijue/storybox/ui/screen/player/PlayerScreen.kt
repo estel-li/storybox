@@ -1,5 +1,6 @@
 package net.lijue.storybox.ui.screen.player
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
@@ -169,8 +171,12 @@ fun PlayerScreen(viewModel: PlayerViewModel, onBack: () -> Unit) {
             item {
                 Text("播放队列", style = MaterialTheme.typography.titleMedium)
             }
-            items(playback.queue.stories, key = { it.id }) { item ->
-                Card(Modifier.fillMaxWidth()) {
+            itemsIndexed(playback.queue.stories, key = { _, item -> item.id }) { index, item ->
+                Card(
+                    Modifier
+                        .fillMaxWidth()
+                        .clickable { viewModel.playQueueItem(index) }
+                ) {
                     Text(
                         text = item.safeTitle,
                         modifier = Modifier.padding(16.dp),

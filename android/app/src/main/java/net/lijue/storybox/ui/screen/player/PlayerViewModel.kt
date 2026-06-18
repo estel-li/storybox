@@ -58,6 +58,10 @@ class PlayerViewModel(
         playerManager.seekTo(positionMillis)
     }
 
+    fun playQueueItem(index: Int) {
+        playerManager.playQueueItem(index)
+    }
+
     fun toggleFavorite() {
         val storyId = playbackState.value.currentStory?.id ?: return
         viewModelScope.launch {

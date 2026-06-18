@@ -50,7 +50,7 @@ fun HomeScreen(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     StoryBoxScaffold(
-        title = "家庭故事盒",
+        title = "老李讲故事",
         actions = {
             OutlinedButton(onClick = onSettings) {
                 Icon(Icons.Default.Settings, contentDescription = null)
@@ -137,14 +137,14 @@ private fun HomeContent(
                 OutlinedButton(onClick = onCategories) { Text("全部") }
             }
         }
-        items(data.categories.take(6), key = { it.id }) { category ->
+        items(data.categories.take(6), key = { "category-${it.id}" }) { category ->
             CategoryCard(category, onClick = { onCategory(category) })
         }
 
         item {
             Text("最近专辑", style = MaterialTheme.typography.titleMedium)
         }
-        items(data.albums, key = { it.id }) { album ->
+        items(data.albums, key = { "album-${it.id}" }) { album ->
             AlbumCard(album, onClick = { onAlbum(album) })
         }
     }

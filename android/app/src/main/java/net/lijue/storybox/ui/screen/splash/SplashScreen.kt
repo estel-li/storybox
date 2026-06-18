@@ -43,7 +43,7 @@ fun SplashScreen(
             contentDescription = null,
             tint = MaterialTheme.colorScheme.primary
         )
-        Text("家庭故事盒", style = MaterialTheme.typography.titleLarge)
+        Text("老李讲故事", style = MaterialTheme.typography.titleLarge)
         CircularProgressIndicator()
         Text(state.message, style = MaterialTheme.typography.bodyLarge)
     }

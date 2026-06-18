@@ -12,7 +12,7 @@ import net.lijue.storybox.data.repository.ApiRepository
 enum class SplashDestination { Home, Setup }
 
 data class SplashUiState(
-    val message: String = "正在连接家庭故事盒...",
+    val message: String = "正在连接老李讲故事...",
     val destination: SplashDestination? = null,
     val setupMessage: String = ""
 )

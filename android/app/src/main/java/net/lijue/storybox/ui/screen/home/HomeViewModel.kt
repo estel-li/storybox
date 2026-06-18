@@ -11,6 +11,7 @@ import net.lijue.storybox.core.model.AlbumDto
 import net.lijue.storybox.core.model.CategoryDto
 import net.lijue.storybox.core.model.PlayHistoryDto
 import net.lijue.storybox.data.repository.ApiRepository
+import net.lijue.storybox.data.repository.PlaybackStart
 import net.lijue.storybox.playback.StoryPlayerManager
 
 data class HomeData(
@@ -50,7 +51,13 @@ class HomeViewModel(
     fun continuePlay(item: PlayHistoryDto, onStarted: () -> Unit) {
         val story = item.story ?: return
         viewModelScope.launch {
-            playerManager.playQueue(listOf(story), startPositionSeconds = item.positionSeconds)
+            val start = runCatching { repository.playbackQueueFor(story) }
+                .getOrDefault(PlaybackStart(listOf(story), 0))
+            playerManager.playQueue(
+                stories = start.stories,
+                startIndex = start.startIndex,
+                startPositionSeconds = item.positionSeconds
+            )
             onStarted()
         }
     }

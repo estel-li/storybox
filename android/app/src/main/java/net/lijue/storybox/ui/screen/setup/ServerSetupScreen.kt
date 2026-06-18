@@ -51,7 +51,7 @@ fun ServerSetupScreen(
     ) {
         Icon(Icons.Default.Router, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
         Spacer(Modifier.height(12.dp))
-        Text("请填写家庭故事盒后端地址", style = MaterialTheme.typography.titleLarge)
+        Text("请填写老李讲故事后端地址", style = MaterialTheme.typography.titleLarge)
         Spacer(Modifier.height(18.dp))
         Card(Modifier.fillMaxWidth()) {
             Column(Modifier.padding(18.dp)) {
