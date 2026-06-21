@@ -67,6 +67,7 @@ docker run -d --name storybox-lan \
   -e STORY_LIBRARY_ROOT=/library \
   -e STORY_ADMIN_PASSWORD=admin123456 \
   -e STORY_JWT_SECRET=please-change-this-secret \
+  -e NUXT_PUBLIC_API_BASE= \
   storybox-lan:local
 ```
 

@@ -16,10 +16,10 @@ pnpm dev
 
 ```env
 NUXT_PUBLIC_API_BASE=
-NUXT_API_PROXY_TARGET=http://127.0.0.1:8080
+NUXT_API_PROXY_TARGET=
 ```
 
-默认情况下 Web 端使用同源 `/api`，由 Nuxt/Nitro 代理到 `NUXT_API_PROXY_TARGET`。如果 Web 和后端分开部署，可以把 `NUXT_PUBLIC_API_BASE` 设置成后端完整地址。
+默认情况下 Web 端使用同源 `/api`，由 Nuxt/Nitro 代理到 `NUXT_API_PROXY_TARGET`。如果未设置 `NUXT_API_PROXY_TARGET`，会使用 `STORY_SERVER_PORT` 推导出 `http://127.0.0.1:${STORY_SERVER_PORT}`。如果 Web 和后端分开部署，可以把 `NUXT_PUBLIC_API_BASE` 设置成后端完整地址。
 
 ## 页面
 
